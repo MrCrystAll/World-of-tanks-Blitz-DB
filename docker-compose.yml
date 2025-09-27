@@ -1,0 +1,29 @@
+services:
+  database:
+    image: mysql:9.4.0
+    container_name: database
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: wotb
+      MYSQL_PASSWORD: wotb
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/1.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 2s
+      interval: 5s
+      retries: 10
+      start_period: 5s
+
+  monitoring:
+    depends_on:
+      database:
+        condition: service_healthy
+    image: phpmyadmin:5.2.2-apache
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
