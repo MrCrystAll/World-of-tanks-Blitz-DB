@@ -15,23 +15,41 @@ CREATE TABLE IF NOT EXISTS TANKS
     -- specify more columns here
 );
 
-CREATE TABLE IF NOT EXISTS SESSIONS
-(
-    sessionId INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50),
-    password VARCHAR(128) NOT NULL
-);
-
-
 -- Create the table in the specified schema
 CREATE TABLE IF NOT EXISTS PLAYERS
 (
-    accountId INT NOT NULL PRIMARY KEY, -- primary key column
-    nickname VARCHAR(50) NOT NULL,
-    sessionId INT,
+    accountId INT NOT NULL PRIMARY KEY,
+    nickname VARCHAR(50) NOT NULL
+);
 
-    FOREIGN KEY (sessionId) REFERENCES SESSIONS(sessionId)
-    -- specify more columns here
+CREATE TABLE IF NOT EXISTS USERS
+(
+    userSessionId VARCHAR(100) NOT NULL PRIMARY KEY,
+    accountId INT NOT NULL,
+
+    FOREIGN KEY (accountId) REFERENCES PLAYERS (accountId)
+);
+
+CREATE TABLE IF NOT EXISTS SESSIONS
+(
+    sessionId INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    creatorId INT NOT NULL,
+    name VARCHAR(50),
+    password VARCHAR(128) NOT NULL,
+
+    FOREIGN KEY (creatorId) REFERENCES PLAYERS (accountId)
+);
+
+
+CREATE TABLE IF NOT EXISTS PLAYERSESSION
+(
+    sessionId INT NOT NULL,
+    playerId INT NOT NULL,
+    role VARCHAR(25),
+
+    PRIMARY KEY (sessionId, playerId),
+    FOREIGN KEY (sessionId) REFERENCES SESSIONS (sessionId),
+    FOREIGN KEY (playerId) REFERENCES PLAYERS (accountId)
 );
 
 CREATE TABLE IF NOT EXISTS PLAYERTANK
@@ -40,8 +58,8 @@ CREATE TABLE IF NOT EXISTS PLAYERTANK
     accountId INT NOT NULL,
 
     PRIMARY KEY(tankId, accountId),
-    FOREIGN KEY (tankId) REFERENCES TANKS(tankId),
-    FOREIGN KEY (accountId) REFERENCES PLAYERS(accountId)
+    FOREIGN KEY (tankId) REFERENCES TANKS (tankId),
+    FOREIGN KEY (accountId) REFERENCES PLAYERS (accountId)
 );
 
 CREATE TABLE IF NOT EXISTS IMAGES
