@@ -1,6 +1,6 @@
 services:
   database:
-    image: mysql:9.4.0
+    build: .
     container_name: database
     ports:
       - 3306:3306
@@ -8,8 +8,6 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: wotb
       MYSQL_PASSWORD: wotb
-    volumes:
-      - ./database/init.sql:/docker-entrypoint-initdb.d/1.sql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 2s
